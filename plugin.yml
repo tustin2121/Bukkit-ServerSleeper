@@ -1,0 +1,12 @@
+name: ServerSleeper
+version: 0.1
+description: |
+      Puts a sever to sleep after a period of inactivity.
+author: Tustin2121
+main: org.digiplex.bukkitplugin.commander.CommanderPlugin
+softdepend: [Commander]
+commands:
+   sleeper:
+       description: The main ServerSleeper command
+       usage: /<command> [reload|postpone]
+
