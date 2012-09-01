@@ -3,7 +3,7 @@ version: 0.1
 description: |
       Puts a sever to sleep after a period of inactivity.
 author: Tustin2121
-main: org.digiplex.bukkitplugin.commander.CommanderPlugin
+main: org.digiplex.bukkitplugin.serversleeper.ServerSleeperPlugin
 softdepend: [Commander]
 commands:
    sleeper:
