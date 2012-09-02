@@ -8,5 +8,7 @@ softdepend: [Commander]
 commands:
    sleeper:
        description: The main ServerSleeper command
-       usage: /<command> [reload|postpone]
+       usage: |
+           /<command> [reload|reset]
+           /<command> [sleep|postpone] [time]
 
