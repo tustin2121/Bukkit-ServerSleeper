@@ -8,7 +8,8 @@ softdepend: [Commander]
 commands:
    sleeper:
        description: The main ServerSleeper command
+       permission: serversleeper.admin
        usage: |
            /<command> [reload|reset]
-           /<command> [sleep|postpone] [time]
+           /<command> [sleep|postpone|timeout] [time]
 

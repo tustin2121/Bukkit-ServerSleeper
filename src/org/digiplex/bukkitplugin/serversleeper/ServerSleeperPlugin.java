@@ -45,6 +45,11 @@ public class ServerSleeperPlugin extends JavaPlugin {
 		timeUntilShutdown = parseHourMinuteFormat(config.getString("timeout"), 60);
 		timeInactive = 0;
 		postponeTime = 0;
+		if (timeUntilShutdown == -1) {
+			Log.info("[ServerSleeper] Server inactivity shutdown disabled.");
+		} else {
+			Log.info("[ServerSleeper] Server inactivity shutdown set for "+timeUntilShutdown+" minutes.");
+		}
 		
 		//register the inactivity monitor, initial delay is 10 sec, interval is 60 sec
 		this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new InactivityMonitor(), 10*20L, 60*20L);
@@ -158,6 +163,24 @@ public class ServerSleeperPlugin extends JavaPlugin {
 				}
 				return true;
 				
+			} else if (args[0].matches("(?i)set|timeout")) {
+				if (args.length < 2) {
+					sender.sendMessage(String.format("/%s %s [time]", label, args[0]));
+					sender.sendMessage("'time' can be minutes or hours with 'm' after minutes and 'h' after hours");
+				} else {
+					int time = parseHourMinuteFormat(args[1], -1);
+					if (time == -1) {
+						sender.sendMessage(MSG_PARSE_ERR);
+						return true;
+					}
+					if (time < timeUntilShutdown) timeInactive = 0;
+					timeUntilShutdown = time;
+					sender.sendMessage("Inactivity shutdown timer set to "+timeUntilShutdown);
+					if (sleepMode != SLEEP_MODE.INACTIVE)
+						sender.sendMessage("Notice: Inactivity shutdown not active: current mode is "+sleepMode.toString());
+				}
+				return true;
+				
 			}
 			return false;
 		}
@@ -173,10 +196,11 @@ public class ServerSleeperPlugin extends JavaPlugin {
 		@Override public void run() {
 			switch (sleepMode) {
 			case INACTIVE:
+				if (timeUntilShutdown == -1) return;
+				if (postponeTime > 0) { 
+					postponeTime--; return;
+				}
 				try {
-					if (postponeTime > 0) { 
-						postponeTime--; return;
-					}
 					int numPlayers = getServer().getScheduler().callSyncMethod(ssplugin, getPlayers).get();
 					//Log.info("[ServerSleeper:InactivityMonitor] Players on server: "+numPlayers);
 					if (numPlayers == 0) {
@@ -192,7 +216,7 @@ public class ServerSleeperPlugin extends JavaPlugin {
 					} else {
 						timeInactive = 0;
 					}
-					Log.info("[ServerSleeper:InactivityMonitor] tI="+timeInactive+"  pp="+postponeTime+"  tus="+timeUntilShutdown);
+					//Log.info("[ServerSleeper:InactivityMonitor] tI="+timeInactive+"  pp="+postponeTime+"  tus="+timeUntilShutdown);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
